@@ -85,7 +85,21 @@ $(function () {
         // return datas;
     }
 
-echarts_1();
+var top10_types = []
+var top10_types_num = []
+    function top10Types() {
+        $.get("http://localhost/type/",
+            function (data) {
+                var obj = eval(data)
+                for (var i=0;i<7;i++){
+                    top10_types.push(obj[i].type)
+                    top10_types_num.push(obj[i].num)
+                }
+                echarts_1();
+            });
+    }
+    top10Types()
+// echarts_1();
 
 var top10_gross_names = []
 var top10_gross_total = []
@@ -105,8 +119,89 @@ top10Gross();
 // echarts_5();
 
 //echarts_top10();
-echarts_numbers();
-echarts_trend();
+
+
+var years = []
+var years_data =[{
+        'value': 100,
+        'name': '废动植物产品'
+    }, {
+        'value': 100,
+        'name': '矿渣、矿灰及残渣'
+    }, {
+        'value': 100,
+        'name': '废药物'
+    }, {
+        'value': 100,
+        'name': '杂项化学品废物'
+    }, {
+        'value': 100,
+        'name': '硅废碎料'
+    }, {
+        'value': 100,
+        'name': '塑料废碎料及下脚料'
+    }, {
+        'value': 100,
+        'name': '废橡胶、皮革'
+    }, {
+        'value': 100,
+        'name': '回收纸及纸板'
+    }, {
+        'value': 100,
+        'name': '废玻璃'
+    }, {
+        'value': 100,
+        'name': '废纺织原料及制品'
+    }, {
+        'value': 100,
+        'name': '废电池'
+    }, {
+        'value': 100,
+        'name': '金属和金属化合物废物'
+    }, {
+        'value': 100,
+        'name': '废弃机电产品和设备'
+    }, {
+        'value': 100,
+        'name': '其他'
+    }];
+    function yearsNum() {
+        $.get("http://localhost/time/",
+            function (data) {
+                var obj = eval(data)
+                for (var i=0;i<14;i++){
+                    years.push(obj[i].year)
+                    years_data[i].value = obj[i].num
+                    years_data[i].name = obj[i].year
+
+                }
+                echarts_numbers();
+            });
+    }
+    yearsNum()
+//echarts_numbers();
+
+    var yearData = []
+    var typeData = []
+    var numData = [[],[],[],[]]
+    function movieTrend() {
+        $.get("http://localhost/trend/",
+            function (data) {
+                var obj = eval(data)
+                for (var i=0;i<4;i++){
+                    typeData.push(obj[i].type)
+
+                }
+                for (var i=0;i<32;i+=4){
+                    yearData.push(obj[i].time)
+                }
+                for (var i=0;i<32;i++){
+                    numData[i%4].push(obj[i].num)
+                }
+                echarts_trend();
+            });
+    }
+    movieTrend()
 
 var cd = [
     {
@@ -373,13 +468,14 @@ myChart.setOption(option);
 // Trend
 function echarts_trend(){
     var myChart = echarts.init(document.getElementById('echarts_trend'));
-    var xData = function() {
-        var data = [];
-        for (var i = 1; i < 31; i++) {
-            data.push(i + "日");
-        }
-        return data;
-    }();
+    // var xData = function() {
+    //     var data = [];
+    //     for (var i = 1; i < 31; i++) {
+    //         data.push(i + "日");
+    //     }
+    //     return data;
+    // }();
+    var xData = yearData
     
     option = {
         backgroundColor: "",
@@ -396,19 +492,19 @@ function echarts_trend(){
         },
         grid: {
             borderWidth: 0,
-            top: 110,
-            bottom: 95,
+            top: "10%",
+            bottom: 45,
             textStyle: {
                 color: "#fff"
             }
         },
         legend: {
             x: '46%',
-            top: '11%',
+            top: '0%',
             textStyle: {
                 color: '#90979c',
             },
-            data: ['访问量', '订单量']
+            data: typeData
         },
     
     
@@ -430,6 +526,11 @@ function echarts_trend(){
         }],
     
         yAxis: [{
+            axisLabel:{
+                show:true,
+                interval:2
+            } ,
+            min: 300,
             type: "value",
             splitLine: {
                 show: false
@@ -437,15 +538,15 @@ function echarts_trend(){
             axisLine: {
                 lineStyle: {
                     color: "rgba(204,187,225,0.5)",
-                }
+                },
             },
-    
+            scale: true
         }],
         dataZoom: [{
             show: true,
-            height: 30,
+            height: 20,
             xAxisIndex: [0],
-            bottom: 30,
+            bottom: 0,
             
             "start": 10,
             "end": 80,
@@ -468,7 +569,7 @@ function echarts_trend(){
             end: 35
         }],
         series: [{
-            name: "访问量",
+            name: typeData[0],
             type: "line",
             symbolSize: 10,
             symbol: 'circle',
@@ -492,12 +593,9 @@ function echarts_trend(){
                     name: '最小值'
                 }]
             },
-            data: [
-                509, 917, 2455, 2610, 2719, 3033, 3044, 3085, 2708, 2809, 2117,2000,1455,1210,719,
-                733,944,2285,2208,3372,3936,3693,2962,2810,3519,2455,2610,2719,2484,2078
-            ],
+            data: numData[0],
         }, {
-            name: "订单量",
+            name: typeData[1],
             type: "line",
             symbolSize: 10,
             symbol: 'circle',
@@ -521,11 +619,63 @@ function echarts_trend(){
                     name: '最小值'
                 }]
             },
-            data: [
-                2136,3693,2962,3810,3519,3484,3915,3823,3455,4310,4019,3433,3544,3885,4208,3372,
-                3484,3915,3748,3675,4009,4433,3544,3285,4208,3372,3484,3915,3823,4265,4298
-            ]
-        }, ]
+            data: numData[1],
+        },
+            {
+                name: typeData[2],
+                type: "line",
+                symbolSize: 10,
+                symbol: 'circle',
+                itemStyle: {
+                    color: "#00afff",
+                },
+                markPoint: {
+                    label: {
+                        normal: {
+                            textStyle: {
+                                color: '#fff'
+                            }
+                        }
+                    },
+                    data: [{
+                        type: 'max',
+                        name: '最大值',
+
+                    }, {
+                        type: 'min',
+                        name: '最小值'
+                    }]
+                },
+                data: numData[2],
+            },
+            {
+                name: typeData[3],
+                type: "line",
+                symbolSize: 10,
+                symbol: 'circle',
+                itemStyle: {
+                    color: "#5B3AAE",
+                },
+                markPoint: {
+                    label: {
+                        normal: {
+                            textStyle: {
+                                color: '#fff'
+                            }
+                        }
+                    },
+                    data: [{
+                        type: 'max',
+                        name: '最大值',
+
+                    }, {
+                        type: 'min',
+                        name: '最小值'
+                    }]
+                },
+                data: numData[3],
+            }
+        ]
     }
     myChart.setOption(option);
 }
@@ -534,52 +684,54 @@ function echarts_trend(){
 function echarts_numbers(){
 
     var myChart = echarts.init(document.getElementById('echarts_numbers'));
-    var seriesData = [{
-        'value': 100,
-        'name': '废动植物产品'
-    }, {
-        'value': 100,
-        'name': '矿渣、矿灰及残渣'
-    }, {
-        'value': 100,
-        'name': '废药物'
-    }, {
-        'value': 100,
-        'name': '杂项化学品废物'
-    }, {
-        'value': 100,
-        'name': '硅废碎料'
-    }, {
-        'value': 100,
-        'name': '塑料废碎料及下脚料'
-    }, {
-        'value': 100,
-        'name': '废橡胶、皮革'
-    }, {
-        'value': 100,
-        'name': '回收纸及纸板'
-    }, {
-        'value': 100,
-        'name': '废玻璃'
-    }, {
-        'value': 100,
-        'name': '废纺织原料及制品'
-    }, {
-        'value': 100,
-        'name': '废电池'
-    }, {
-        'value': 100,
-        'name': '金属和金属化合物废物'
-    }, {
-        'value': 100,
-        'name': '废弃机电产品和设备'
-    }, {
-        'value': 100,
-        'name': '其他'
-    }];
-    var legendData = ['废电池', '废药物', '废动植物产品', '废橡胶、皮革', '回收纸及纸板', '废玻璃', '硅废碎料', 
-    '杂项化学品废物', '金属和金属化合物废物', '废弃机电产品和设备', '矿渣、矿灰及残渣', '塑料废碎料及下脚料', '回收纸及纸板', 
-    '废纺织原料及制品', '其他']
+    var seriesData = years_data
+    // var seriesData = [{
+    //     'value': 100,
+    //     'name': '废动植物产品'
+    // }, {
+    //     'value': 100,
+    //     'name': '矿渣、矿灰及残渣'
+    // }, {
+    //     'value': 100,
+    //     'name': '废药物'
+    // }, {
+    //     'value': 100,
+    //     'name': '杂项化学品废物'
+    // }, {
+    //     'value': 100,
+    //     'name': '硅废碎料'
+    // }, {
+    //     'value': 100,
+    //     'name': '塑料废碎料及下脚料'
+    // }, {
+    //     'value': 100,
+    //     'name': '废橡胶、皮革'
+    // }, {
+    //     'value': 100,
+    //     'name': '回收纸及纸板'
+    // }, {
+    //     'value': 100,
+    //     'name': '废玻璃'
+    // }, {
+    //     'value': 100,
+    //     'name': '废纺织原料及制品'
+    // }, {
+    //     'value': 100,
+    //     'name': '废电池'
+    // }, {
+    //     'value': 100,
+    //     'name': '金属和金属化合物废物'
+    // }, {
+    //     'value': 100,
+    //     'name': '废弃机电产品和设备'
+    // }, {
+    //     'value': 100,
+    //     'name': '其他'
+    // }];
+    // var legendData = ['废电池', '废药物', '废动植物产品', '废橡胶、皮革', '回收纸及纸板', '废玻璃', '硅废碎料',
+    // '杂项化学品废物', '金属和金属化合物废物', '废弃机电产品和设备', '矿渣、矿灰及残渣', '塑料废碎料及下脚料', '回收纸及纸板',
+    // '废纺织原料及制品', '其他']
+    var legendData = years
     var colorList = ['#06FDFF','#21DFFF','#41BEFF','#5DA2FF','#7886FF','#956BFF','#C23DFF','#FA06FF','#06FDFF','#21DFFF','#41BEFF','#5DA2FF','#7886FF','#956BFF','#C23DFF'];
     option = {
         backgroundColor:'',//背景设为透明
@@ -955,8 +1107,8 @@ function echarts_1() {
         type: 'category',
 
         // !!!各类型电影
-      		data: ['商超门店', '教育培训', '房地产', '生活服务', '汽车销售', '旅游酒店', '五金建材','sss','商超门店', '教育培训'],
-        axisLine: {
+      		data: top10_types,
+            axisLine: {
             show: true,
          lineStyle: {
                 color: "rgba(255,255,255,.1)",
@@ -1011,7 +1163,7 @@ function echarts_1() {
         type: 'bar',
 
         // 各类型电影数量
-        data: [200, 300, 300, 900, 1500, 1200, 999,2323,232,122],
+        data: top10_types_num,
         barWidth:'35%', //柱子宽度
        // barGap: 1, //柱子之间间距
         itemStyle: {

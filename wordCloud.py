@@ -6,7 +6,7 @@ from PIL import Image  # 处理图片
 
 
 def ciyun():
-    with open('data.csv', 'r', encoding='utf-8') as f:  # 打开新的文本转码为gbk
+    with open('wordCLoudData.csv', 'r', encoding='utf-8') as f:  # 打开新的文本转码为gbk
         space_list = f.read()  # 读取文本内容
     # print(space_list)
 
