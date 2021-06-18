@@ -23,7 +23,7 @@ def ciyun():
                    relative_scaling=0.6,  # 设置字体大小与词频的关联程度为0.4
                    random_state=50,
                    scale=2,
-                   colormap="Oranges",
+                   colormap="cool",
                    ).generate(space_list)
 
     # image_color = ImageColorGenerator(backgroud)  # 设置生成词云的颜色，如去掉这两行则字体为默认颜色

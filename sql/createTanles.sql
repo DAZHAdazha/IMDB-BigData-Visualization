@@ -1,15 +1,21 @@
-create table `all`
+create table allMovies
 (
-    name varchar(100) charset utf8 not null
-        primary key,
-    time text                      null,
-    type text                      null
+	ID    int auto_increment,
+    name text null,
+    time text null,
+    type text null,
+	unique (ID)
 );
 
 create table reviews
 (
-    mID     int  not null,
-    content text null
+	ID    int auto_increment,
+	name  text   null,
+	title  text   null,
+    content text null,
+	
+	unique (ID)
+	
 );
 
 create table top250
@@ -18,11 +24,13 @@ create table top250
     name  text   not null,
     grade double null,
     gross bigint null,
-    url   text   null,
     constraint top250_ID_uindex
         unique (ID)
 );
-
+alter table allMovies
+    add primary key (ID);
 alter table top250
+    add primary key (ID);
+alter table reviews
     add primary key (ID);
 

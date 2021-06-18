@@ -1,45 +1,189 @@
 ﻿
 $(function () {
-echarts_1();
-echarts_5();
+    // zly添加
+//     全局变量
+    var global_datas = [
+        {
+            "value": 2.0,
+            "name": "                       TBD                        "
+        },
+        {
+            "value": 2.0,
+            "name": "                       TBD                        "
+        },
+        {
+            "value": 2.0,
+            "name": "                       TBD                        "
+        },
+        {
+            "value": 2.0,
+            "name": "                       TBD                        "
+        },
+        {
+            "value": 2.0,
+            "name": "                       TBD                        "
+        },
+        {
+            "value": 2.0,
+            "name": "                       TBD                        "
+        },
+        {
+            "value": 2.0,
+            "name": "                       TBD                        "
+        },
+        {
+            "value": 2.0,
+            "name": "                       TBD                        "
+        },
+        {
+            "value": 2.0,
+            "name": "                       TBD                        "
+        },
+        {
+            "value": 2.0,
+            "name": "                       TBD                        "
+        }
+    ];
 
-echarts_top10();
+    top10()
+
+    function format(str) {
+        var len = str.length
+        var res = "";
+        for (var i=0;i<30&&i<len;i++){
+            res = res + str[i]
+        }
+        if (len>30)
+            res = res + "..."
+        return res;
+    }
+
+    function top10() {
+        $.get("http://localhost/top10",
+            function (data) {
+                var obj = eval(data)
+                // 计算最大长度
+                var len = obj.length
+                var maxLen = 0;
+                for (var i=0;i<len;i++){
+                    if (obj[i].name.length>maxLen){
+                        maxLen = obj[i].name.length;
+                    }
+                }
+                for (var i=0;i<len;i++){
+                    obj[i].name = format(obj[i].name);
+                }
+                // 数据写入
+                for (var i = 0; i < len; i++) {
+                    // 打印不出来的原因是字符串不够长cnm
+                    // 补全到20位
+                    global_datas[i].value = obj[i].grade
+                    global_datas[i].name = obj[i].name
+                }
+                echarts_top10();
+            });
+        // return datas;
+    }
+
+echarts_1();
+
+var top10_gross_names = []
+var top10_gross_total = []
+    function top10Gross() {
+        $.get("http://localhost/top10gross/",
+            function (data) {
+                var obj = eval(data)
+                for (var i=0;i<10;i++){
+                    top10_gross_names.push(obj[i].name)
+                    top10_gross_total.push(obj[i].gross)
+                }
+                echarts_5();
+            });
+        // return datas;
+    }
+top10Gross();
+// echarts_5();
+
+//echarts_top10();
 echarts_numbers();
 echarts_trend();
-echarts_ticketOffice();
 
+var cd = [
+    {
+        "name": '1月',
+        "value": 5555,
+    },
+    {
+        "name": '2月',
+        "value": 16758,
+    },
+        {
+            "name": '3月',
+            "value": 15001,
+        },
+        {
+            "name": '4月',
+            "value": 28932,
+        },
+        {
+            "name": '5月',
+            "value": 36245,
+        },
+        {
+            "name": '6月',
+            "value": 31563,
+        },
+        {
+            "name": '7月',
+            "value": 36389,
+        },
+        {
+            "name": '8月',
+            "value": 38000,
+        },
+    {
+        "name": '9月',
+        "value": 1321,
+    },
+    {
+        "name": '10月',
+        "value": 15234,
+    },
+    {
+        "name": '11月',
+        "value": 54533,
+    },
+    {
+        "name": '12月',
+        "value": 5555,
+    }
+    ];
+
+    function gradeGross() {
+
+        $.get("http://localhost/grades/",
+            function (data) {
+                var obj = eval(data)
+                for (var i=0;i<obj.length;i++){
+                    cd[i].name = obj[i] + "";
+                }
+                $.get("http://localhost/gross/",
+                    function (data) {
+                        var obj = eval(data)
+                        for (var i=0;i<obj.length;i++){
+                            cd[i].value = obj[i]
+                        }
+                        echarts_ticketOffice();
+                    });
+            });
+    }
+    gradeGross()
+// echarts_ticketOffice();
+
+// Point Chart
 function echarts_ticketOffice(){
     var myChart = echarts.init(document.getElementById('echarts_ticketOffice'));
-    var chartData = [{
-        name: '2月',
-        value: 16758,
-    },
-    {
-        name: '3月',
-        value: 15001,
-    },
-    {
-        name: '4月',
-        value: 28932,
-    },
-    {
-        name: '5月',
-        value: 36245,
-    },
-    {
-        name: '6月',
-        value: 31563,
-    },
-    {
-        name: '7月',
-        value: 36389,
-    },
-    {
-        name: '8月',
-        value: 38000,
-    }
-];
-
+    var chartData = cd;
 option = {
     backgroundColor: '', //背景色
     tooltip: {
@@ -114,7 +258,7 @@ option = {
     },
     yAxis: {
         type: 'value',
-        name: '（次）',
+        name: '(十万美元)',
         nameTextStyle: {
             color: '#93d3fc',
             fontSize: 12,
@@ -124,7 +268,7 @@ option = {
             show: true,
             textStyle: {
                 color: '#9bc8ff',
-                fontSize: 13
+                fontSize: 10
             },
             interval: 0, //类目间隔 设置为 1，表示『隔一个标签显示一个标签』
             margin: 10,
@@ -149,7 +293,7 @@ option = {
         }
     },
     series: [{
-            name: '访问',
+            name: '票房',
             type: 'scatter',
             stack: '总量',
             label: {
@@ -165,7 +309,7 @@ option = {
             },
             itemStyle: {
                 normal: {
-                    color: '#00FFD2', //颜色
+                    color: '#956BFF', //颜色
                 }
             },
             symbol: 'circle', //circle, rect, roundRect, triangle,  pin, diamond, arrow
@@ -177,7 +321,7 @@ option = {
                 data.forEach(function(items) {
                     var itemName = items.name,
                         itemValue = items.value,
-                        itemStyle = itemValue / 1000; //console.log(itemStyle)
+                        itemStyle = itemValue / 200; //console.log(itemStyle)
                     arr.push({
                         name: itemName,
                         value: itemValue,
@@ -226,7 +370,7 @@ myChart.setOption(option);
 
 }
 
-
+// Trend
 function echarts_trend(){
     var myChart = echarts.init(document.getElementById('echarts_trend'));
     var xData = function() {
@@ -386,6 +530,7 @@ function echarts_trend(){
     myChart.setOption(option);
 }
 
+// Pie Chart
 function echarts_numbers(){
 
     var myChart = echarts.init(document.getElementById('echarts_numbers'));
@@ -435,9 +580,7 @@ function echarts_numbers(){
     var legendData = ['废电池', '废药物', '废动植物产品', '废橡胶、皮革', '回收纸及纸板', '废玻璃', '硅废碎料', 
     '杂项化学品废物', '金属和金属化合物废物', '废弃机电产品和设备', '矿渣、矿灰及残渣', '塑料废碎料及下脚料', '回收纸及纸板', 
     '废纺织原料及制品', '其他']
-    var colorList = ['#73DDFF', '#73ACFF', '#FDD56A', '#FDB36A', '#FD866A', '#9E87FF', '#58D5FF','#73DDFF', 
-    '#73ACFF', '#FDD56A', '#FDB36A', '#FD866A', '#9E87FF', '#58D5FF','#73DDFF', 
-    '#73ACFF'];
+    var colorList = ['#06FDFF','#21DFFF','#41BEFF','#5DA2FF','#7886FF','#956BFF','#C23DFF','#FA06FF','#06FDFF','#21DFFF','#41BEFF','#5DA2FF','#7886FF','#956BFF','#C23DFF'];
     option = {
         backgroundColor:'',//背景设为透明
         // title: {
@@ -569,53 +712,13 @@ function echarts_numbers(){
     myChart.setOption(option);
 }
 
-
+// Top 10
 function echarts_top10(){
     var myChart = echarts.init(document.getElementById('echart_top10'));
 
-    var colorList = ['#f36c6c','#f36c6c', '#e6cf4e', '#e6cf4e','#20d180', '#20d180','#0093ff','#0093ff','#ff9900','#ff9900'
+    var colorList = ['#11FDFE','#06FDFF','#21DFFF','#41BEFF','#5DA2FF','#7886FF','#956BFF','#C23DFF','#FA06FF','#FA06FF'
 ];
-    var datas = [{
-        "value": 9.2,
-        "name": "The Shawshank Redemption",
-    },
-    {
-        "value": 9.1,
-        "name": "The Godfather"
-    },
-    {
-        "value": 9,
-        "name": "The Godfather: Part II"
-    },
-    {
-        "value": 9,
-        "name": "The Dark Knight"
-    },
-    {
-        "value": 8.9,
-        "name": "12 Angry Men"
-    },
-    {
-        "value": 8.9,
-        "name": "Schindler's List"
-    },
-    {
-        "value": 8.9,
-        "name": "The Lord of the Rings"
-    },
-    {
-        "value": 8.8,
-        "name": "Pulp Fiction"
-    },
-    {
-        "value": 8.8,
-        "name": "The Good, the Bad and the Ugly"
-    },
-    {
-        "value": 8.8,
-        "name": "Fight Club"
-    }
-]
+    var datas = global_datas;
 let maxArr = (new Array(datas.length)).fill(100);
 option = {
     tooltip: {
@@ -828,6 +931,7 @@ option = {
         });
 }
 
+// Top Right
 function echarts_1() {
         // 基于准备好的dom，初始化echarts实例
         var myChart = echarts.init(document.getElementById('echart1'));
@@ -912,7 +1016,7 @@ function echarts_1() {
        // barGap: 1, //柱子之间间距
         itemStyle: {
             normal: {
-                color:'#20d180',
+                color:'#956BFF',
                 opacity: 1,
 				barBorderRadius: 5,
             }
@@ -929,6 +1033,7 @@ function echarts_1() {
         });
     }
 
+// Top Mid    
 function echarts_5() {
         // 基于准备好的dom，初始化echarts实例
         var myChart = echarts.init(document.getElementById('echart5'));
@@ -951,8 +1056,9 @@ function echarts_5() {
     },
     xAxis: [{
         type: 'category',
-      		data: ['Avengers: Endgame', 'Avengers: Infinity War', 'Harry Potter and the Deathly Hallows: Part 2', 'The Lord of the Rings: The Return of the King', 'The Lion King', 'The Dark Knight Rises',
-               'Joker', 'Toy Story 3','Jurassic Park','The Dark Knight'],
+      		// data: ['Avengers: Endgame', 'Avengers: Infinity War', 'Harry Potter and the Deathly Hallows: Part 2', 'The Lord of the Rings: The Return of the King', 'The Lion King', 'The Dark Knight Rises',
+              //  'Joker', 'Toy Story 3','Jurassic Park','The Dark Knight'],
+        data:top10_gross_names,
         axisLine: {
             show: true,
          lineStyle: {
@@ -1007,12 +1113,13 @@ function echarts_5() {
     }],
     series: [{
         type: 'bar',
-        data: [2797501328, 2048359754,1342321665, 1146030912, 1083720877,1081142612,1074354306,1066970811,1033928303, 1005973645],
+        //data: [2797501328, 2048359754,1342321665, 1146030912, 1083720877,1081142612,1074354306,1066970811,1033928303, 1005973645],
+        data: top10_gross_total,
         barWidth:'35%', //柱子宽度
        // barGap: 1, //柱子之间间距
         itemStyle: {
             normal: {
-                color:'#2f89cf',
+                color:'#5DA2FF',
                 opacity: 1,
 				barBorderRadius: 5,
             }
