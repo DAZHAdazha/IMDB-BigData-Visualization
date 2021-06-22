@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt  # 数据可视化
 import wordcloud  # 分词
 from wordcloud import WordCloud, ImageColorGenerator, STOPWORDS  # 词云，颜色生成器，停止词
-import numpy as np  # 科学计算
-from PIL import Image  # 处理图片
+import numpy as np
+from PIL import Image
 
 
 def ciyun():
@@ -17,7 +17,6 @@ def ciyun():
                    mode='RGBA',
                    mask=backgroud,  # 添加蒙版，生成指定形状的词云，并且词云图的颜色可从蒙版里提取
                    max_words=500,
-                   # stopwords=STOPWORDS.add('老年人'),  # 内置的屏蔽词,并添加自己设置的词语
                    font_path='C:\Windows\Fonts\STZHONGS.ttf',
                    max_font_size=150,
                    relative_scaling=0.6,  # 设置字体大小与词频的关联程度为0.4
